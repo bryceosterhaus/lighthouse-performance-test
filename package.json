@@ -1,0 +1,14 @@
+{
+	"name": "lighthouse-script",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "",
+	"dependencies": {
+		"chrome-launcher": "^0.15.1",
+		"lighthouse": "^9.6.7",
+		"prettier": "^2.7.1"
+	},
+	"scripts": {
+		"lighthouse": "node ./lighthouse.js"
+	}
+}
