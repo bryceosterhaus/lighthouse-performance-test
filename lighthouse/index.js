@@ -9,12 +9,8 @@ const mobileConfig = require('lighthouse/lighthouse-core/config/lr-mobile-config
 const URL = 'http://localhost:8080';
 
 const dateObj = new Date();
-const month = dateObj.getUTCMonth() + 1;
-const day = dateObj.getUTCDate();
-const year = dateObj.getUTCFullYear();
-const time = Date.now();
 
-const dateString = `${year}-${month}-${day}-${time}`;
+const dateString = dateObj.toString();
 
 (async () => {
 	console.log('Launching Chrome:');

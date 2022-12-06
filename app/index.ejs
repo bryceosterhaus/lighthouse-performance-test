@@ -33,7 +33,7 @@
       data: {
         x: "date",
         columns: [
-          ["date", ...dates],
+          ["date", ...dates.map(date => new Date(date))],
           ["desktop", ...desktopPerformance],
           ["mobile", ...mobilePerformance]
         ],
@@ -44,7 +44,7 @@
         x: {
           type: "timeseries",
           tick: {
-            format: "%Y-%m-%d"
+            format: "%Y-%m-%d(Hour: %H)"
           }
         }
       },
