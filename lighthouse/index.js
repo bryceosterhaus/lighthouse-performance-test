@@ -12,8 +12,9 @@ const dateObj = new Date();
 const month = dateObj.getUTCMonth() + 1;
 const day = dateObj.getUTCDate();
 const year = dateObj.getUTCFullYear();
+const time = Date.now();
 
-const dateString = `${year}-${month}-${day}`;
+const dateString = `${year}-${month}-${day}-${time}`;
 
 (async () => {
 	console.log('Launching Chrome:');

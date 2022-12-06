@@ -1,14 +1,23 @@
 const express = require('express');
-const app = express();
-const port = 3000;
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
 const cron = require('node-cron');
-const {exec} = require('child_process');
+const {spawn} = require('child_process');
+const serveIndex = require('serve-index');
+
+const port = 3000;
+const app = express();
+const dataDir = path.join(__dirname, '..', 'data');
+
+app.use(
+	'/files',
+	express.static(path.join(__dirname, '..')),
+	serveIndex(path.join(__dirname, '..'), {icons: true})
+);
 
 app.get('/', (req, res) => {
-	const dataJson = require(path.join(__dirname, '..', '/data/main.json'));
+	const dataJson = require(path.join(dataDir, 'main.json'));
 
 	fs.readFile(__dirname + '/index.ejs', 'utf-8', (err, html) => {
 		res.send(
@@ -24,17 +33,28 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
 	console.log(`App listening on port ${port}`);
 
-	// Runs every hour
-	cron.schedule('0 * * * *', () => {
-		exec(
-			'sh ' + path.join(__dirname, '../run.sh'),
-			(error, stdout, stderr) => {
-				console.log(stdout);
-				console.log(stderr);
-				if (error !== null) {
-					console.log(`exec error: ${error}`);
-				}
-			}
-		);
+	run_script('sh', ['./run.sh']);
+
+	// Runs every 12 hours, midnight and noon
+	cron.schedule('0 */12 * * *', () => {
+		run_script('sh', ['./run.sh']);
 	});
 });
+
+function run_script(command, args, callback) {
+	const child = spawn(command, args);
+
+	child.stdout.setEncoding('utf8');
+	child.stdout.on('data', function (data) {
+		console.log(data);
+	});
+
+	child.stderr.setEncoding('utf8');
+	child.stderr.on('data', function (data) {
+		console.log(data);
+	});
+
+	child.on('close', function (data) {
+		console.log('Exit Code: ' + data);
+	});
+}
