@@ -117,9 +117,9 @@ function build_time_test() {
 				if (buildTimes) {
 					const dateObj = new Date();
 
-					const {build: buildData} = database.read();
+					const database = database.read();
 
-					buildData[dateObj.toDateString()] = {
+					database.build[dateObj.toDateString()] = {
 						'clean-repo': buildTimes[0],
 						'no-gradle-cache': buildTimes[1],
 						'full-cache': buildTimes[2],
