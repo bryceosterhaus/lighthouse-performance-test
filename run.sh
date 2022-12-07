@@ -15,10 +15,10 @@ cp "./resources/portal-ext.properties" "./tmp/liferay-portal-master-private"
 bash ./tmp/liferay-portal-master-private/tomcat-9.0.68/bin/startup.sh
 
 # Wait a little bit for startup
-sleep 100
+sleep 60
 
 # Run tests
-node ./lighthouse/index.js
+node ./lighthouse.js
 
 # Teardown
 bash ./tmp/liferay-portal-master-private/tomcat-9.0.68/bin/shutdown.sh

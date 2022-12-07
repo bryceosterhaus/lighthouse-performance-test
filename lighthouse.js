@@ -6,6 +6,8 @@ const CDP = require('chrome-remote-interface');
 const desktopConfig = require('lighthouse/lighthouse-core/config/lr-desktop-config.js');
 const mobileConfig = require('lighthouse/lighthouse-core/config/lr-mobile-config.js');
 
+const database = require('./database');
+
 const URL = 'http://localhost:8080';
 
 const dateObj = new Date();
@@ -70,19 +72,17 @@ const dateString = dateObj.toString();
 		mobile: mobileScore,
 	});
 
-	const allData = JSON.parse(fs.readFileSync('./data/main.json'));
-
-	allData.latest = {
+	database.data.lighthouse.latest = {
 		desktop: desktopScore,
 		mobile: mobileScore,
 	};
 
-	allData.raw[dateString] = {
+	database.data.lighthouse.raw[dateString] = {
 		desktop: desktopScore,
 		mobile: mobileScore,
 	};
 
-	fs.writeFileSync('./data/main.json', JSON.stringify(allData));
+	database.write();
 
 	if (remoteInterface) {
 		await remoteInterface.close();

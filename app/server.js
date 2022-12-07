@@ -6,6 +6,8 @@ const cron = require('node-cron');
 const {spawn} = require('child_process');
 const serveIndex = require('serve-index');
 
+const database = require('../database');
+
 const port = 3000;
 const app = express();
 const dataDir = path.join(__dirname, '..', 'data');
@@ -34,7 +36,7 @@ app.listen(port, () => {
 	console.log(`App listening on port ${port}`);
 
 	// Runs at midnight and noon
-	cron.schedule('0 12,24 * * *', () => {
+	cron.schedule('0 11,23 * * *', () => {
 		try {
 			run_script('sh', ['./run.sh']);
 		} catch (e) {
@@ -65,27 +67,18 @@ function build_time_test() {
 
 		run_script('git', ['pull', '--rebase', 'upstream', 'master'], () => {
 			run_script('sh', [antAllBenchMarkScript], (output) => {
-				console.log(output);
-
 				let buildTimes = output.match(BUILD_TIME_REGEX);
 
 				if (buildTimes) {
-					const allData = JSON.parse(
-						fs.readFileSync('./data/build-times.json')
-					);
-
 					const dateObj = new Date();
 
-					allData[dateObj.toDateString()] = {
+					database.data.build[dateObj.toDateString()] = {
 						'clean-repo': buildTimes[0],
 						'no-gradle-cache': buildTimes[1],
 						'full-cache': buildTimes[2],
 					};
 
-					fs.writeFileSync(
-						'./data/build-times.json',
-						JSON.stringify(allData)
-					);
+					database.write();
 				}
 
 				process.chdir(initCwd);
@@ -94,7 +87,7 @@ function build_time_test() {
 	}
 }
 
-function run_script(command, args, callback) {
+function run_script(command, args, callback = () => {}) {
 	const child = spawn(command, args);
 
 	let allOutput = '';
