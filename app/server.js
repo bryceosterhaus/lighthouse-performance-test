@@ -151,7 +151,7 @@ function build_time_test() {
 								'full-cache': buildTimes[2],
 							};
 
-							data.write();
+							database.write();
 						}
 
 						process.chdir(initCwd);
