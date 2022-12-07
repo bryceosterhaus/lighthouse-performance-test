@@ -12,14 +12,14 @@ const port = 3000;
 const app = express();
 
 app.get('/', (req, res) => {
-	const dataJson = database.data.lighthouse;
+	const {lighthouse: lighthouseData} = database.read();
 
 	fs.readFile(__dirname + '/index.ejs', 'utf-8', (err, html) => {
 		res.send(
 			ejs.render(html, {
-				data: JSON.stringify(dataJson.raw),
-				desktopScore: dataJson.latest.desktop,
-				mobileScore: dataJson.latest.mobile,
+				data: JSON.stringify(lighthouseData.raw),
+				desktopScore: lighthouseData.latest.desktop,
+				mobileScore: lighthouseData.latest.mobile,
 			})
 		);
 	});
@@ -117,7 +117,9 @@ function build_time_test() {
 				if (buildTimes) {
 					const dateObj = new Date();
 
-					database.data.build[dateObj.toDateString()] = {
+					const {build: buildData} = database.read();
+
+					buildData[dateObj.toDateString()] = {
 						'clean-repo': buildTimes[0],
 						'no-gradle-cache': buildTimes[1],
 						'full-cache': buildTimes[2],

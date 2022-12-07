@@ -72,12 +72,14 @@ const dateString = dateObj.toString();
 		mobile: mobileScore,
 	});
 
-	database.data.lighthouse.latest = {
+	const data = database.read();
+
+	data.lighthouse.latest = {
 		desktop: desktopScore,
 		mobile: mobileScore,
 	};
 
-	database.data.lighthouse.raw[dateString] = {
+	data.lighthouse.raw[dateString] = {
 		desktop: desktopScore,
 		mobile: mobileScore,
 	};

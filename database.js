@@ -21,7 +21,19 @@ try {
 }
 
 module.exports = {
-	data,
+	read() {
+		const dataString = fs.readFileSync(databaseFilePath);
+
+		try {
+			data = JSON.parse(dataString);
+
+			return data;
+		} catch (e) {
+			console.log(e);
+
+			return data;
+		}
+	},
 	write() {
 		fs.writeFileSync(databaseFilePath, JSON.stringify(data));
 	},
