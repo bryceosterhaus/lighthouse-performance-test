@@ -143,15 +143,15 @@ function build_time_test() {
 						if (buildTimes) {
 							const dateObj = new Date();
 
-							const database = database.read();
+							const data = database.read();
 
-							database.build[dateObj.toDateString()] = {
+							data.build[dateObj.toDateString()] = {
 								'clean-repo': buildTimes[0],
 								'no-gradle-cache': buildTimes[1],
 								'full-cache': buildTimes[2],
 							};
 
-							database.write();
+							data.write();
 						}
 
 						process.chdir(initCwd);
