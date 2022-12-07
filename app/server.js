@@ -77,6 +77,12 @@ app.get('/test/lighthouse', function (req, res, next) {
 	});
 });
 
+app.get('/test/build', function (req, res, next) {
+	build_time_test();
+
+	res.send('Running build scripts...');
+});
+
 app.listen(port, () => {
 	console.log(`App listening on port ${port}`);
 
@@ -104,13 +110,17 @@ const antAllBenchMarkScript = path.join(toolsDir, 'ant_all_benchmark.sh');
 
 const BUILD_TIME_REGEX = /\b([\d]+ minutes and [\d]+ seconds)\b/g;
 
+let buildRunning = false;
+
 function build_time_test() {
-	if (fs.existsSync(antAllBenchMarkScript)) {
+	if (fs.existsSync(antAllBenchMarkScript) && !buildRunning) {
 		const initCwd = process.cwd();
 
 		process.chdir(toolsDir);
 
 		run_script('git', ['pull', '--rebase', 'upstream', 'master'], () => {
+			buildRunning = true;
+
 			run_script('sh', [antAllBenchMarkScript], (output) => {
 				let buildTimes = output.match(BUILD_TIME_REGEX);
 
@@ -129,6 +139,8 @@ function build_time_test() {
 				}
 
 				process.chdir(initCwd);
+
+				buildRunning = false;
 			});
 		});
 	}
