@@ -10,10 +10,9 @@ const database = require('../database');
 
 const port = 3000;
 const app = express();
-const dataDir = path.join(__dirname, '..', 'data');
 
 app.get('/', (req, res) => {
-	const dataJson = require(path.join(dataDir, 'main.json'));
+	const dataJson = database.data.lighthouse;
 
 	fs.readFile(__dirname + '/index.ejs', 'utf-8', (err, html) => {
 		res.send(
