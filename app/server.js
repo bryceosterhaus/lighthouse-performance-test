@@ -12,12 +12,6 @@ const port = 3000;
 const app = express();
 const dataDir = path.join(__dirname, '..', 'data');
 
-app.use(
-	'/files',
-	express.static(path.join(__dirname, '..')),
-	serveIndex(path.join(__dirname, '..'), {icons: true})
-);
-
 app.get('/', (req, res) => {
 	const dataJson = require(path.join(dataDir, 'main.json'));
 
@@ -29,6 +23,58 @@ app.get('/', (req, res) => {
 				mobileScore: dataJson.latest.mobile,
 			})
 		);
+	});
+});
+
+app.use(
+	'/files',
+	express.static(path.join(__dirname, '..')),
+	serveIndex(path.join(__dirname, '..'), {icons: true})
+);
+
+let LOG = '';
+let task = null;
+
+app.get('/test/lighthouse', function (req, res, next) {
+	res.setHeader('Content-Type', 'text/html; charset=utf-8');
+	res.setHeader('Cache-Control', 'no-store');
+	res.setHeader('Transfer-Encoding', 'chunked');
+
+	res.write('<h1>Kicking off lighthouse test...</h1>');
+
+	if (!task) {
+		task = spawn('sh', ['./run.sh']);
+	}
+
+	let log = '';
+
+	setInterval(() => {
+		res.write(`<pre>${log}</pre>`);
+		log = '';
+	}, 500);
+
+	function writeLog(data) {
+		log += data;
+	}
+
+	writeLog(LOG);
+
+	task.stdout.setEncoding('utf8');
+	task.stdout.on('data', function (data) {
+		LOG += data;
+		writeLog(data);
+	});
+
+	task.stderr.setEncoding('utf8');
+	task.stderr.on('data', function (data) {
+		LOG += data;
+		writeLog(data);
+	});
+
+	task.on('close', function (data) {
+		LOG = '';
+		task = null;
+		res.end();
 	});
 });
 
