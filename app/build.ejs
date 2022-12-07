@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Build Performance Graph</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://naver.github.io/billboard.js/release/latest/dist/billboard.css"
+		/>
+		<script src="https://naver.github.io/billboard.js/release/latest/dist/billboard.pkgd.min.js"></script>
+	</head>
+	<body>
+		<h1>Liferay DXP Build Times</h1>
+
+		<h2>Score Over Time</h2>
+		<div id="lineChart"></div>
+
+		<script>
+			const chartData = <%- data %>;
+
+			const dates = Object.keys(chartData);
+
+			const regex = /([\d\.]+) minutes/;
+
+			function getMinutes(str) {
+				const matches = str.match(regex);
+				return parseFloat(matches[1]);
+			}
+
+			   const cleanRepo = dates.map(date => getMinutes(chartData[date]["clean-repo"]));
+			   const noGradleCache = dates.map(date => getMinutes(chartData[date]["no-gradle-cache"]));
+			const fullCache = dates.map(date => getMinutes(chartData[date]["full-cache"]));
+
+			   bb.generate({
+			     data: {
+			       x: "date",
+			       columns: [
+			         ["date", ...dates.map(date => new Date(date))],
+			         ['clean-repo', ...cleanRepo],
+				  ["no-gradle-cache", ...noGradleCache],
+			         ["full-cache", ...fullCache]
+			       ],
+			       type: "line",
+			     },
+			     bindto: "#lineChart",
+			     axis: {
+			       x: {
+				label: 'Date',
+			         type: "timeseries",
+			         tick: {
+			           format: "%Y-%m-%d"
+			         }
+			       },
+				y: {
+					label: 'Minutes',
+					min: 3
+				}
+			     },
+			   });
+		</script>
+	</body>
+</html>

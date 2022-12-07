@@ -25,6 +25,18 @@ app.get('/', (req, res) => {
 	});
 });
 
+app.get('/build', (req, res) => {
+	const {build: buildData} = database.read();
+
+	fs.readFile(__dirname + '/build.ejs', 'utf-8', (err, html) => {
+		res.send(
+			ejs.render(html, {
+				data: JSON.stringify(buildData),
+			})
+		);
+	});
+});
+
 app.use(
 	'/files',
 	express.static(path.join(__dirname, '..')),
@@ -118,30 +130,36 @@ function build_time_test() {
 
 		process.chdir(toolsDir);
 
-		run_script('git', ['pull', '--rebase', 'upstream', 'master'], () => {
-			buildRunning = true;
+		run_script('git', ['reset', '--hard'], () => {
+			run_script(
+				'git',
+				['pull', '--rebase', 'upstream', 'master'],
+				() => {
+					buildRunning = true;
 
-			run_script('sh', [antAllBenchMarkScript], (output) => {
-				let buildTimes = output.match(BUILD_TIME_REGEX);
+					run_script('sh', [antAllBenchMarkScript], (output) => {
+						let buildTimes = output.match(BUILD_TIME_REGEX);
 
-				if (buildTimes) {
-					const dateObj = new Date();
+						if (buildTimes) {
+							const dateObj = new Date();
 
-					const database = database.read();
+							const database = database.read();
 
-					database.build[dateObj.toDateString()] = {
-						'clean-repo': buildTimes[0],
-						'no-gradle-cache': buildTimes[1],
-						'full-cache': buildTimes[2],
-					};
+							database.build[dateObj.toDateString()] = {
+								'clean-repo': buildTimes[0],
+								'no-gradle-cache': buildTimes[1],
+								'full-cache': buildTimes[2],
+							};
 
-					database.write();
+							database.write();
+						}
+
+						process.chdir(initCwd);
+
+						buildRunning = false;
+					});
 				}
-
-				process.chdir(initCwd);
-
-				buildRunning = false;
-			});
+			);
 		});
 	}
 }

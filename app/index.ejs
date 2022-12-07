@@ -1,54 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Performance Graph</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <link rel="stylesheet" href="https://naver.github.io/billboard.js/release/latest/dist/billboard.css">
-    <script src="https://naver.github.io/billboard.js/release/latest/dist/billboard.pkgd.min.js"></script>
-  </head>
-  <body>
-	<h1>Liferay DXP Lighthouse Performance Scores</h1>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Lighthouse Performance Graph</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://naver.github.io/billboard.js/release/latest/dist/billboard.css"
+		/>
+		<script src="https://naver.github.io/billboard.js/release/latest/dist/billboard.pkgd.min.js"></script>
+	</head>
+	<body>
+		<h1>Liferay DXP Lighthouse Performance Scores</h1>
 
-  <div>
-    <h2>Current</h2>
-    <b>Desktop:</b>  <%= desktopScore %>
-    <b>Mobile:</b> <%= mobileScore %>
-  </div>
+		<div>
+			<h2>Current</h2>
+			<b>Desktop:</b> <%= desktopScore %> <b>Mobile:</b> <%= mobileScore
+			%>
+		</div>
 
-  <h2>Score Over Time</h2>
-  <div id="lineChart"></div>
+		<h2>Score Over Time</h2>
+		<div id="lineChart"></div>
 
-	<script>
-		const chartData = <%- data %>;
+		<script>
+			const chartData = <%- data %>;
 
-    const dates = Object.keys(chartData);
+			  const dates = Object.keys(chartData);
 
-    const desktopPerformance = dates.map(date => chartData[date].desktop);
-    const mobilePerformance = dates.map(date => chartData[date].mobile);
+			  const desktopPerformance = dates.map(date => chartData[date].desktop);
+			  const mobilePerformance = dates.map(date => chartData[date].mobile);
 
-    bb.generate({
-      data: {
-        x: "date",
-        columns: [
-          ["date", ...dates.map(date => new Date(date))],
-          ["desktop", ...desktopPerformance],
-          ["mobile", ...mobilePerformance]
-        ],
-        type: "line",
-      },
-      bindto: "#lineChart",
-      axis: {
-        x: {
-          type: "timeseries",
-          tick: {
-            format: "%Y-%m-%d(Hour: %H)"
-          }
-        }
-      },
-    });
-	</script>
-  </body>
+			  bb.generate({
+			    data: {
+			      x: "date",
+			      columns: [
+			        ["date", ...dates.map(date => new Date(date))],
+			        ["desktop", ...desktopPerformance],
+			        ["mobile", ...mobilePerformance]
+			      ],
+			      type: "line",
+			    },
+			    bindto: "#lineChart",
+			    axis: {
+			      x: {
+			        type: "timeseries",
+			        tick: {
+			          format: "%Y-%m-%d(Hour: %H)"
+			        }
+			      }
+			    },
+			  });
+		</script>
+	</body>
 </html>
